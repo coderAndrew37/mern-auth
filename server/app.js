@@ -5,6 +5,7 @@ const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
 const logger = require("./startup/logger");
+const authRoutes = require("./routes/authRoutes");
 const port = process.env.PORT || 3000;
 
 // Import the MongoDB connection function
@@ -31,6 +32,7 @@ app.use(
 
 // Routes
 app.get("/", (req, res) => res.send("The server is running!"));
+app.use("/api/auth", authRoutes);
 
 // Start server
 app.listen(port, () => {
