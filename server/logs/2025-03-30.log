@@ -87,3 +87,24 @@
 {"level":"info","message":"MongoDB connected","timestamp":"2025-03-30T12:05:56.512Z"}
 {"level":"info","message":"Server is running on port 3000","timestamp":"2025-03-30T12:07:31.074Z"}
 {"level":"info","message":"MongoDB connected","timestamp":"2025-03-30T12:07:31.096Z"}
+{"level":"warn","message":"MongoDB disconnected","timestamp":"2025-03-30T17:52:21.013Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-03-30T18:11:09.362Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-03-30T18:11:09.395Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-03-30T18:28:52.500Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-03-30T18:28:52.521Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-03-30T18:29:21.695Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-03-30T18:29:21.864Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-03-30T18:29:33.403Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-03-30T18:29:33.460Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-03-30T18:33:08.662Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-03-30T18:33:08.783Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-03-30T18:33:32.875Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-03-30T18:33:32.903Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-03-30T18:35:26.781Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-03-30T18:35:26.830Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-03-30T18:37:26.489Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-03-30T18:37:26.589Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-03-30T18:39:21.907Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-03-30T18:39:21.937Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-03-30T18:39:39.957Z"}
+{"level":"info","message":"MongoDB connected","timestamp":"2025-03-30T18:39:40.019Z"}

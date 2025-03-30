@@ -1,6 +1,7 @@
 const { User, userValidation } = require("../models/user.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const transporter = require("../config/email.js");
 
 // Token generation helper
 const generateAuthToken = (userId) => {
@@ -47,6 +48,17 @@ const register = async (req, res) => {
     // Generate and set token
     const token = generateAuthToken(user._id);
     setAuthCookie(res, token);
+
+    // Send welsome email (optional)
+    const welcomeEmail = {
+      from: process.env.ADMIN_EMAIL,
+      to: user.email,
+      subject: "Welcome to Our Sleek Sites!",
+      text: `Hello ${user.name}, welcome to our service! We are glad to have you here.`,
+      html: `<p>Hello ${user.name}, welcome to our service! We are glad to have you here.</p>`,
+    };
+
+    await transporter.sendMail(welcomeEmail);
 
     res.status(201).json({
       success: true,
