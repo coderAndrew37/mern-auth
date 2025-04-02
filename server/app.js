@@ -19,7 +19,7 @@ connectDB();
 
 // Middleware
 app.use(express.json());
-app.use(cookieParser());
+app.use(cookieParser(process.env.COOKIE_SECRET)); // Add secret to cookie parser
 app.use(compression());
 app.use(helmet());
 app.use(

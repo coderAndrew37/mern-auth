@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const joi = require("joi");
 const joiPassword = require("joi-password-complexity");
 
+// Mongoose Schema
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -33,7 +34,7 @@ const userSchema = new mongoose.Schema({
     default: "",
   },
   verifyOtpExpireAt: {
-    type: Number, // Fixed: changed 'number' to 'Number'
+    type: Number,
     default: 0,
   },
   isVerified: {
@@ -45,18 +46,19 @@ const userSchema = new mongoose.Schema({
     default: "",
   },
   resetOtpExpireAt: {
-    type: Number, // Fixed: changed 'number' to 'Number'
+    type: Number,
     default: 0,
   },
-
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
 
+// Model
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 
+// Password Complexity Configuration
 const passwordComplexity = joiPassword({
   min: 8,
   max: 20,
@@ -76,30 +78,45 @@ const passwordComplexity = joiPassword({
     "Password must meet at least 2 of the complexity requirements",
 });
 
-const userValidation = joi
-  .object({
-    name: joi.string().required().min(3).max(30).messages({
-      "string.empty": "Please provide your name",
-      "string.min": "Name must be at least 3 characters long",
-      "string.max": "Name cannot exceed 30 characters",
-      "any.required": "Name is required",
-    }),
-    email: joi.string().email().required().min(10).max(50).messages({
-      "string.email": "Please provide a valid email address",
-      "string.empty": "Please provide your email",
-      "string.min": "Email must be at least 10 characters long",
-      "string.max": "Email cannot exceed 50 characters",
-      "any.required": "Email is required",
-    }),
-    password: passwordComplexity,
-    verifyOtp: joi.string(),
-    verifyOtpExpireAt: joi.number(),
-    isVerified: joi.boolean(),
-    resetOtp: joi.string(),
-    resetOtpExpireAt: joi.number(),
-  })
-  .messages({
-    "object.unknown": "Invalid field: {#label}",
-  });
+// Validation Schemas
+const registerValidation = joi.object({
+  name: joi.string().required().min(3).max(30).messages({
+    "string.empty": "Please provide your name",
+    "string.min": "Name must be at least 3 characters long",
+    "string.max": "Name cannot exceed 30 characters",
+    "any.required": "Name is required",
+  }),
+  email: joi.string().email().required().messages({
+    "string.email": "Please provide a valid email address",
+    "string.empty": "Please provide your email",
+    "any.required": "Email is required",
+  }),
+  password: passwordComplexity,
+});
 
-module.exports = { User, userValidation };
+const loginValidation = joi.object({
+  email: joi.string().email().required().messages({
+    "string.email": "Please provide a valid email address",
+    "string.empty": "Please provide your email",
+    "any.required": "Email is required",
+  }),
+  password: joi.string().required().messages({
+    "string.empty": "Please provide a password",
+    "any.required": "Password is required",
+  }),
+});
+
+// OTP Verification Schema (for verify-account endpoint)
+const otpValidation = joi.object({
+  otp: joi.string().length(6).required().messages({
+    "string.length": "OTP must be 6 digits",
+    "any.required": "OTP is required",
+  }),
+});
+
+module.exports = {
+  User,
+  registerValidation,
+  loginValidation,
+  otpValidation,
+};
