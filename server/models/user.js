@@ -119,4 +119,5 @@ module.exports = {
   registerValidation,
   loginValidation,
   otpValidation,
+  passwordComplexity,
 };

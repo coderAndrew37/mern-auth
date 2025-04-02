@@ -9,6 +9,8 @@ const {
   verifyAccount,
   authenticate,
   requireVerifiedAccount,
+  sendPasswordResetOtp,
+  resetPassword,
 } = require("../controllers/authController");
 
 // Public routes
@@ -22,6 +24,10 @@ router.get("/current-user", authenticate, getCurrentUser);
 // Verification routes
 router.post("/send-verification", authenticate, sendAccountVerificationOtp);
 router.post("/verify-account", authenticate, verifyAccount);
+
+// Password reset routes
+router.post("/send-password-reset", sendPasswordResetOtp);
+router.post("/reset-password", resetPassword);
 
 // Example of a route that requires verified account
 router.get(

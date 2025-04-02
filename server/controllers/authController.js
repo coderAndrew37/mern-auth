@@ -1,8 +1,12 @@
+const joi = require("joi");
+const crypto = require("crypto");
+
 const {
   User,
   registerValidation,
   loginValidation,
   otpValidation,
+  passwordComplexity,
 } = require("../models/user.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -295,6 +299,88 @@ const verifyAccount = async (req, res) => {
   }
 };
 
+// Password Reset Endpoints
+const sendPasswordResetOtp = async (req, res) => {
+  try {
+    const { error } = joi
+      .object({
+        email: joi.string().email().required(),
+      })
+      .validate(req.body);
+
+    if (error)
+      return res.status(400).json({
+        success: false,
+        message: "Valid email required",
+      });
+
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+      const otp = generateOtp();
+      user.resetOtp = await bcrypt.hash(otp, 10);
+      user.resetOtpExpireAt = Date.now() + 15 * 60 * 1000;
+      await user.save();
+
+      await transporter.sendMail({
+        from: `"Password Reset" <${process.env.ADMIN_EMAIL}>`,
+        to: user.email,
+        subject: "Your Password Reset Code",
+        html: `Your OTP: <strong>${otp}</strong> (expires in 15 minutes)`,
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Password reset OTP was sent to your email",
+    });
+  } catch (err) {
+    handleAuthError(res, err);
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { error } = joi
+      .object({
+        otp: joi.string().length(6).required(),
+        newPassword: passwordComplexity.required(),
+      })
+      .validate(req.body);
+
+    if (error)
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
+
+    const user = await User.findOne({
+      resetOtpExpireAt: { $gt: Date.now() },
+    });
+
+    if (!user || !(await bcrypt.compare(req.body.otp, user.resetOtp))) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid/expired OTP",
+      });
+    }
+
+    user.password = await bcrypt.hash(req.body.newPassword, 12);
+    user.resetOtp = undefined;
+    user.resetOtpExpireAt = undefined;
+    await user.save();
+
+    // Invalidate all sessions
+    res.clearCookie("token", getCookieOptions());
+
+    res.json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (err) {
+    handleAuthError(res, err);
+  }
+};
+
 // Helper functions
 const generateOtp = () => crypto.randomInt(100000, 999999).toString();
 
@@ -338,6 +424,17 @@ const handleAuthError = (res, error) => {
   res.status(500).json(response);
 };
 
+const resetLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5,
+  handler: (req, res) => {
+    res.status(429).json({
+      success: false,
+      message: "Too many password reset attempts",
+    });
+  },
+});
+
 module.exports = {
   registerUser: [authLimiter, register],
   loginUser: [authLimiter, login],
@@ -345,6 +442,8 @@ module.exports = {
   getCurrentUser: [authenticate, getCurrentUser],
   sendAccountVerificationOtp: [authenticate, sendAccountVerificationOtp],
   verifyAccount: [authenticate, verifyAccount],
+  sendPasswordResetOtp: [resetLimiter, sendPasswordResetOtp],
+  resetPassword: [resetLimiter, resetPassword],
   authenticate,
   requireVerifiedAccount,
 };
