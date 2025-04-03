@@ -1,16 +1,54 @@
+import axios from "axios";
 import React, { useContext, useState } from "react";
-import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { assets } from "../assets/assets";
 import { AppContext } from "../context/AppContextDefinition";
 
 const Login = () => {
-  const { backendUrl, setIsLoggedIn } = useContext(AppContext).backendUrl;
+  const { backendUrl, setIsLoggedIn } = useContext(AppContext);
 
   const [state, setState] = useState("Sign Up");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const navigate = useNavigate();
+
+  const handleOnSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      axios.defaults.withCredentials = true;
+
+      if (state === "Sign Up") {
+        const { data } = await axios.post(`${backendUrl}/api/auth/register`, {
+          name,
+          email,
+          password,
+        });
+
+        if (data.success) {
+          setIsLoggedIn(true);
+          navigate("/");
+        } else {
+          toast.error(data.message || "Something went wrong");
+        }
+      } else {
+        const { data } = await axios.post(`${backendUrl}/api/auth/login`, {
+          email,
+          password,
+        });
+
+        if (data.success) {
+          setIsLoggedIn(true);
+          navigate("/");
+        } else {
+          toast.error(data.message);
+        }
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    }
+  };
 
   return (
     <div className="flex items-center justify-center h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400">
@@ -30,7 +68,7 @@ const Login = () => {
           {state === "Sign Up" ? "Create my account" : "Login to my account"}
         </p>
 
-        <form>
+        <form onSubmit={handleOnSubmit}>
           {state === "Sign Up" && (
             <div className="flex flex-items-center gap-3 w-full mb-4 px-5 py-2 bg-[#333A5C] rounded-full">
               <img src={assets.person_icon} alt="" />
