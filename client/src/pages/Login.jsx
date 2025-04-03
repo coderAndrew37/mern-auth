@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "../context/AppContextDefinition";
 
 const Login = () => {
+  const { backendUrl, setIsLoggedIn } = useContext(AppContext).backendUrl;
+
   const [state, setState] = useState("Sign Up");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
